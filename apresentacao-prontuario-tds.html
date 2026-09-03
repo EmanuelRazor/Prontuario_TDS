@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prontuário Eletrônico TDS</title>
+<style>
+  :root{
+    --ink:#10201f;
+    --ink-2:#3b4e4c;
+    --ink-3:#687b79;
+    --line:#dde7e5;
+    --bg:#f4f8f7;
+    --card:#ffffff;
+    --green:#0a7c74;
+    --green-soft:#e2f2f0;
+    --blue:#01417e;
+    --blue-soft:#e5edf7;
+    --purple:#6b3fa0;
+    --purple-soft:#f0eaf8;
+    --amber:#9a6100;
+    --amber-soft:#fdf1de;
+    --red:#b3261e;
+    --red-soft:#fdeceb;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(16,32,31,.06), 0 6px 18px rgba(16,32,31,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:76px}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex; align-items:center; gap:8px; height:56px; overflow-x:auto}
+  nav .brand{font-weight:700; font-size:14px; white-space:nowrap; margin-right:8px; color:var(--green)}
+  nav a{
+    color:var(--ink-2); text-decoration:none; font-size:13.5px; font-weight:500;
+    padding:6px 10px; border-radius:8px; white-space:nowrap;
+  }
+  nav a:hover{background:var(--green-soft); color:var(--green)}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    background:linear-gradient(160deg,#0a7c74 0%,#076765 55%,#05504f 100%);
+    color:#fff; padding:64px 0 56px;
+  }
+  header.hero .eyebrow{
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    opacity:.85; font-weight:600; margin:0 0 14px;
+  }
+  header.hero h1{font-size:clamp(30px,5vw,46px); line-height:1.15; margin:0 0 16px; letter-spacing:-.02em}
+  header.hero p.sub{font-size:18px; max-width:680px; opacity:.92; margin:0 0 28px}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+    padding:6px 13px; border-radius:999px; font-size:13.5px; font-weight:500;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:56px 0; border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:7px; background:var(--green); color:#fff;
+    font-size:13px; font-weight:700; margin-right:10px;
+  }
+  h2{font-size:26px; margin:0 0 10px; letter-spacing:-.015em; display:flex; align-items:center}
+  .lead{color:var(--ink-2); max-width:720px; margin:0 0 28px; font-size:17px}
+  h3{font-size:18px; margin:32px 0 12px}
+
+  /* ---------- GRID + CARDS ---------- */
+  .grid{display:grid; gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(226px,1fr))}
+  .g2x{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  }
+  .card h4{margin:0 0 8px; font-size:17px}
+  .card p{margin:0 0 10px; color:var(--ink-2); font-size:15px}
+  .card ul{margin:10px 0 0; padding-left:18px; color:var(--ink-2); font-size:14.5px}
+  .card li{margin-bottom:5px}
+  .card li::marker{color:var(--green)}
+
+  /* perfil cards */
+  .perfil{border-top:4px solid var(--green)}
+  .perfil.admin{border-top-color:var(--purple)}
+  .perfil.recep{border-top-color:var(--amber)}
+  .perfil.medico{border-top-color:var(--blue)}
+  .perfil.tecnico{border-top-color:var(--green)}
+  .perfil .icon{
+    width:44px; height:44px; border-radius:12px; display:flex; align-items:center;
+    justify-content:center; font-size:22px; margin-bottom:14px;
+  }
+  .perfil.admin .icon{background:var(--purple-soft)}
+  .perfil.recep .icon{background:var(--amber-soft)}
+  .perfil.medico .icon{background:var(--blue-soft)}
+  .perfil.tecnico .icon{background:var(--green-soft)}
+  .tagline{font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px}
+  .perfil.admin .tagline{color:var(--purple)}
+  .perfil.recep .tagline{color:var(--amber)}
+  .perfil.medico .tagline{color:var(--blue)}
+  .perfil.tecnico .tagline{color:var(--green)}
+  .nao{margin:14px 0 0; font-size:13.5px; color:var(--ink-3)}
+
+  /* módulo cards */
+  .mod{position:relative}
+  .mod .badge{
+    position:absolute; top:18px; right:18px; font-size:11.5px; font-weight:700;
+    background:var(--green-soft); color:var(--green); padding:3px 9px; border-radius:999px;
+  }
+  .mod .badge.done{background:var(--amber-soft); color:var(--amber)}
+  .mod .stamp{
+    display:inline-block; font-size:12px; font-weight:700; color:var(--ink-3);
+    letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px;
+  }
+
+  /* ---------- FLOW ---------- */
+  .flow{display:flex; align-items:stretch; gap:0; flex-wrap:nowrap; margin:24px 0}
+  .flow .step{
+    flex:1 1 0; min-width:0; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:15px 12px; text-align:center; box-shadow:var(--shadow);
+  }
+  .flow .step .who{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px}
+  .flow .step .what{font-size:14px; font-weight:600; line-height:1.3}
+  .flow .step .det{font-size:12px; color:var(--ink-3); margin-top:6px; line-height:1.4}
+  .flow .arrow{
+    display:flex; align-items:center; justify-content:center; padding:0 5px;
+    color:var(--ink-3); font-size:18px; flex:0 0 auto;
+  }
+  .w-adm{color:var(--purple)} .w-rec{color:var(--amber)} .w-med{color:var(--blue)} .w-tec{color:var(--green)}
+
+  /* ---------- TABLE ---------- */
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow)}
+  table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:620px}
+  th,td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line)}
+  thead th{background:#edf4f3; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2)}
+  tbody tr:last-child td{border-bottom:0}
+  td.c,th.c{text-align:center}
+  .yes{color:var(--green); font-weight:700}
+  .no{color:#c3ccc8}
+
+  /* ---------- TIMELINE ---------- */
+  .tl{border-left:2px solid var(--line); margin:20px 0 0; padding-left:26px}
+  .tl .item{position:relative; padding-bottom:24px}
+  .tl .item::before{
+    content:""; position:absolute; left:-33px; top:5px; width:12px; height:12px;
+    border-radius:50%; background:var(--green); border:2px solid var(--bg);
+  }
+  .tl .item.med::before{background:var(--blue)}
+  .tl .item.rec::before{background:var(--amber)}
+  .tl .hora{font-size:13px; font-weight:700; color:var(--ink-3); letter-spacing:.05em}
+  .tl .titulo{font-weight:600; margin:2px 0 2px}
+  .tl .desc{font-size:14.5px; color:var(--ink-2)}
+
+  /* ---------- MOCKUP ---------- */
+  .mock{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; box-shadow:var(--shadow);
+  }
+  .mock .bar{background:#0a7c74; color:#fff; padding:10px 16px; font-size:13.5px; display:flex; justify-content:space-between; align-items:center}
+  .mock .bar .u{font-size:12px; opacity:.88}
+  .mock .body{padding:16px}
+  .mock .alerta{background:var(--red-soft); color:var(--red); border:1px solid #f3c9c6; border-radius:9px; padding:9px 12px; font-size:13.5px; font-weight:600; margin-bottom:14px}
+  .mock .linha{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px}
+  .mock .linha:last-child{border-bottom:0}
+  .mock .alto{color:var(--red); font-weight:700}
+  .mock .tabs{display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:12px; flex-wrap:wrap}
+  .mock .tabs span{font-size:13px; padding:7px 12px; color:var(--ink-3)}
+  .mock .tabs span.on{color:var(--green); font-weight:700; border-bottom:2px solid var(--green)}
+
+  /* ---------- DB ---------- */
+  .db{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+  .db .tname{font-weight:700; font-size:15px; margin-bottom:8px; color:var(--green); font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .db ul{list-style:none; margin:0; padding:0; font-size:13.5px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--ink-2)}
+  .db li{padding:3px 0; border-bottom:1px solid #f0f4f2}
+  .db li:last-child{border-bottom:0}
+  .db .fk{color:var(--blue)}
+  .db .pk{color:var(--amber); font-weight:700}
+
+  /* ---------- CALLOUT ---------- */
+  .callout{
+    background:var(--amber-soft); border-left:4px solid var(--amber);
+    padding:16px 20px; border-radius:0 10px 10px 0; margin:24px 0; font-size:15px; color:#5c3d00;
+  }
+  .callout strong{color:#3d2900}
+  .callout.red{background:var(--red-soft); border-left-color:var(--red); color:#7a1a14}
+  .callout.red strong{color:#5c110d}
+
+  /* ---------- REGRAS ---------- */
+  .regra{display:flex; gap:14px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--line)}
+  .regra:last-child{border-bottom:0}
+  .regra .n{
+    flex:0 0 30px; height:30px; border-radius:50%; background:var(--green); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  }
+  .regra .t{font-weight:600; margin-bottom:2px}
+  .regra .d{font-size:14.5px; color:var(--ink-2)}
+
+  /* ---------- SPRINTS ---------- */
+  .sprint{display:flex; gap:16px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--line)}
+  .sprint:last-child{border-bottom:0}
+  .sprint .tag{
+    flex:0 0 70px; background:var(--green-soft); color:var(--green); text-align:center;
+    border-radius:9px; padding:8px 0; font-weight:700; font-size:13px; line-height:1.2;
+  }
+  .sprint .tag small{display:block; font-size:10.5px; font-weight:600; opacity:.8; text-transform:uppercase; letter-spacing:.05em}
+  .sprint .ent{font-weight:600}
+  .sprint .cnc{font-size:14px; color:var(--ink-3)}
+
+  .fora{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+  .fora span{background:#fff; border:1px dashed #ccd6d1; color:var(--ink-3); padding:7px 13px; border-radius:999px; font-size:14px; text-decoration:line-through}
+
+  footer{background:#10201f; color:#c5d2cb; padding:36px 0; font-size:14px}
+  footer strong{color:#fff}
+
+  @media (max-width:860px){
+    .flow{flex-direction:column}
+    .flow .arrow{transform:rotate(90deg); padding:6px 0}
+    .flow .step{padding:16px}
+  }
+  @media (max-width:640px){
+    section{padding:40px 0}
+  }
+  @media print{
+    nav{display:none}
+    body{background:#fff}
+    section{page-break-inside:avoid; border-bottom:1px solid #ddd}
+    .card,.db,.mock,.tablewrap{box-shadow:none}
+    header.hero{background:#0a7c74 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">Prontuário TDS</span>
+    <a href="#ideia">A ideia</a>
+    <a href="#perfis">Perfis</a>
+    <a href="#fluxo">Fluxo</a>
+    <a href="#permissoes">Permissões</a>
+    <a href="#modulos">Módulos</a>
+    <a href="#telas">Telas</a>
+    <a href="#dados">Banco</a>
+    <a href="#dia">Um dia</a>
+    <a href="#regras">Regras</a>
+    <a href="#sprints">Sprints</a>
+    <a href="#grupos">Como trabalhar</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Técnico em Desenvolvimento de Sistemas · Turma 2025</p>
+    <h1>Prontuário Eletrônico TDS</h1>
+    <p class="sub">Um sistema construído pela turma TDS 2025 e usado pelas turmas de Técnico em Enfermagem para praticar o registro assistencial no computador.</p>
+    <div class="chips">
+      <span class="chip">PHP + MySQL</span>
+      <span class="chip">Bootstrap</span>
+      <span class="chip">4 perfis de acesso</span>
+      <span class="chip">6 módulos a construir</span>
+      <span class="chip">8 sprints</span>
+      <span class="chip">Dados 100% fictícios</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 1. A IDEIA ============ -->
+<section id="ideia">
+  <div class="wrap">
+    <h2><span class="num">1</span>A ideia</h2>
+    <p class="lead">Os alunos do Técnico em Enfermagem chegam ao estágio sabendo cuidar do paciente — mas travam na hora de usar o computador. Todo hospital hoje registra em prontuário eletrônico. Vamos construir um.</p>
+
+    <div class="grid g2">
+      <div class="card">
+        <h4>O problema</h4>
+        <p>O aluno de enfermagem aprende a aferir pressão, fazer curativo e administrar medicação. Mas quando chega no campo de estágio, encontra uma tela — e nunca viu uma.</p>
+        <p style="margin-bottom:0">Não existe um sistema para ele treinar antes. Nenhuma escola compra licença de prontuário só para praticar.</p>
+      </div>
+      <div class="card">
+        <h4>A solução</h4>
+        <p>A turma TDS 2025 constrói um prontuário simples e funcional. Depois de pronto, ele <strong>fica na escola</strong> — instalado no laboratório, à disposição de todas as turmas de Enfermagem que vierem.</p>
+        <p style="margin-bottom:0">Sistema pequeno, feito com capricho. Não precisa ser robusto — precisa ser <strong>correto no fluxo</strong> e durar.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>O sistema não termina quando a nota sai.</strong> Ele fica instalado no laboratório da escola e continua sendo usado pelas próximas turmas de Enfermagem, ano após ano. Isso muda o que estamos construindo: não é um trabalho que roda uma vez na apresentação e some numa pasta — é uma ferramenta que outras pessoas vão abrir depois que vocês já tiverem se formado. Por isso o código precisa ser organizado, o banco precisa poder ser resetado entre as turmas, e cada decisão precisa estar escrita neste documento.
+    </div>
+
+    <h3>Duas turmas, dois aprendizados</h3>
+    <div class="grid g2">
+      <div class="card" style="border-left:4px solid var(--green)">
+        <div class="tagline" style="color:var(--green)">Turma TDS 2025</div>
+        <h4>Constrói</h4>
+        <ul>
+          <li>CRUD completo em PHP com banco relacional</li>
+          <li>Login, sessão e controle de permissão por perfil</li>
+          <li>Validação de formulários e mensagens ao usuário</li>
+          <li>Regras de negócio de um domínio real, não inventado</li>
+          <li>Trabalho em equipe com padrão de código combinado</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left:4px solid var(--blue)">
+        <div class="tagline" style="color:var(--blue)">Turma de Enfermagem</div>
+        <h4>Usa</h4>
+        <ul>
+          <li>Registrar sinais vitais em tela, não em papel</li>
+          <li>Escrever anotação de enfermagem com objetividade</li>
+          <li>Checar medicação e justificar quando não administrar</li>
+          <li>Ler um prontuário completo e encontrar informação</li>
+          <li>Entender que o registro é documento legal</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Critério para decidir o que entra no sistema:</strong> se o profissional não faz isso no plantão, fica de fora. E se um aluno de 1º módulo não consegue programar em duas aulas, simplifica ou adia.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. PERFIS ============ -->
+<section id="perfis">
+  <div class="wrap">
+    <h2><span class="num">2</span>Os quatro perfis</h2>
+    <p class="lead">Cada perfil espelha um cargo real do hospital, com atribuições que quase não se sobrepõem. Isso torna o sistema realista e — para a turma TDS 2025 — torna o controle de permissão fácil de entender e de testar.</p>
+
+    <div class="grid g4">
+      <div class="card perfil admin">
+        <div class="icon">⚙️</div>
+        <div class="tagline">Perfil 1</div>
+        <h4>Administrador</h4>
+        <p>O pessoal de TI. Cuida do sistema, não do paciente.</p>
+        <ul>
+          <li>Cadastra e desativa usuários</li>
+          <li>Define perfis e redefine senhas</li>
+          <li>Enxerga qualquer prontuário</li>
+          <li>Faz backup e reseta a base entre as turmas</li>
+        </ul>
+        <p class="nao"><strong>Vê tudo, mas não registra nada.</strong> Todo registro precisa de um profissional responsável — e TI não é profissional de saúde.</p>
+      </div>
+
+      <div class="card perfil recep">
+        <div class="icon">🗂️</div>
+        <div class="tagline">Perfil 2</div>
+        <h4>Recepção</h4>
+        <p>A porta de entrada do hospital. Quem abre o prontuário.</p>
+        <ul>
+          <li>Admite e cadastra o paciente</li>
+          <li>Coleta documentos, contato e acompanhante</li>
+          <li>Registra as alergias informadas</li>
+          <li>Aloca e troca o leito</li>
+        </ul>
+        <p class="nao"><strong>Não acessa dado clínico.</strong> Vê só a aba de dados cadastrais — não vê sinais vitais, registros nem medicações.</p>
+      </div>
+
+      <div class="card perfil medico">
+        <div class="icon">🩺</div>
+        <div class="tagline">Perfil 3</div>
+        <h4>Médico</h4>
+        <p>Define a conduta. Prescreve e avalia.</p>
+        <ul>
+          <li>Registra o diagnóstico</li>
+          <li>Lança a prescrição (dose, via, horários)</li>
+          <li>Suspende uma prescrição</li>
+          <li>Escreve a <strong>evolução médica</strong></li>
+          <li>Dá alta ao paciente</li>
+        </ul>
+        <p class="nao"><strong>Não executa.</strong> Prescreve, mas não checa medicação nem afere sinais vitais.</p>
+      </div>
+
+      <div class="card perfil tecnico">
+        <div class="icon">💉</div>
+        <div class="tagline">Perfil 4</div>
+        <h4>Técnico de Enfermagem</h4>
+        <p>Quem está com o paciente. O perfil mais usado do sistema.</p>
+        <ul>
+          <li>Registra sinais vitais</li>
+          <li>Escreve a <strong>anotação de enfermagem</strong></li>
+          <li>Vê as medicações do turno</li>
+          <li>Checa: administrado ou não</li>
+          <li>Justifica quando não administra</li>
+        </ul>
+        <p class="nao"><strong>Não prescreve.</strong> Executa e registra o que executou.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Por que o administrador não cadastra paciente.</strong> É a pergunta mais comum quando alguém vê essa divisão pela primeira vez. O administrador é da TI: ele mantém o sistema funcionando, cria os acessos e resolve problemas. Quem admite paciente é a recepção, porque é ela que atende a pessoa na chegada, confere documento e coleta contato. Dar essa tarefa ao TI seria como pedir para o técnico de informática atender a portaria. Cargos diferentes, permissões diferentes — e é exatamente isso que o sistema precisa espelhar.
+    </div>
+
+    <div class="callout">
+      <strong>Anotação × Evolução — a diferença que o sistema ensina.</strong> A <em>anotação de enfermagem</em> é do técnico: descreve o que ele observou e o que fez. A <em>evolução médica</em> é do médico: registra a avaliação clínica e a conduta. São dois textos diferentes, escritos por profissionais diferentes, no mesmo prontuário. No banco de dados, são a mesma tabela com um campo <code>tipo</code> — e é o perfil de quem está logado que decide qual dos dois vai ser gravado.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. FLUXO ============ -->
+<section id="fluxo">
+  <div class="wrap">
+    <h2><span class="num">3</span>Como o sistema funciona</h2>
+    <p class="lead">O caminho do paciente dentro do sistema, da chegada até a alta. Cada caixa é uma tela, e a cor indica quem faz.</p>
+
+    <h3>Fluxo principal</h3>
+    <div class="flow">
+      <div class="step">
+        <div class="who w-rec">Recepção</div>
+        <div class="what">Admite o paciente</div>
+        <div class="det">Dados, contato, alergias, leito</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-med">Médico</div>
+        <div class="what">Avalia e prescreve</div>
+        <div class="det">Diagnóstico + medicamentos e horários</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Técnico</div>
+        <div class="what">Afere sinais vitais</div>
+        <div class="det">PA, FC, FR, T, SpO₂, dor</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Técnico</div>
+        <div class="what">Checa a medicação</div>
+        <div class="det">Administrado ou justificado</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Técnico</div>
+        <div class="what">Escreve a anotação</div>
+        <div class="det">O que observou no turno</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-med">Médico</div>
+        <div class="what">Evolui e dá alta</div>
+        <div class="det">Avaliação clínica e conduta</div>
+      </div>
+    </div>
+
+    <h3>O que o técnico faz ao entrar no sistema</h3>
+    <div class="flow">
+      <div class="step">
+        <div class="who w-tec">1</div>
+        <div class="what">Login</div>
+        <div class="det">Usuário e senha</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">2</div>
+        <div class="what">Painel de leitos</div>
+        <div class="det">Lista dos pacientes internados</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">3</div>
+        <div class="what">Ficha do paciente</div>
+        <div class="det">Dados, sinais, registros, medicações</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">4</div>
+        <div class="what">Registra</div>
+        <div class="det">Sinais vitais, anotação ou checagem</div>
+      </div>
+    </div>
+
+    <h3>Onde entra o administrador</h3>
+    <div class="flow">
+      <div class="step">
+        <div class="who w-adm">Administrador</div>
+        <div class="what">Cria os usuários</div>
+        <div class="det">Antes de tudo: um login para cada aluno</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-adm">Administrador</div>
+        <div class="what">Acompanha</div>
+        <div class="det">Consulta e imprime qualquer prontuário</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-adm">Administrador</div>
+        <div class="what">Reseta a base</div>
+        <div class="det">Ao final da prática, para a próxima turma</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Repare que o fluxo assistencial é circular.</strong> O técnico registra, o médico lê e ajusta a conduta, o técnico executa a nova conduta. O prontuário é uma conversa entre profissionais — e é isso que o sistema precisa deixar visível na tela.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. PERMISSÕES ============ -->
+<section id="permissoes">
+  <div class="wrap">
+    <h2><span class="num">4</span>Matriz de permissões</h2>
+    <p class="lead">Esta tabela é o contrato do sistema. Antes de programar qualquer tela, a turma consulta aqui quem pode entrar.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ação</th>
+            <th class="c">Admin</th>
+            <th class="c">Recepção</th>
+            <th class="c">Médico</th>
+            <th class="c">Técnico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Cadastrar e desativar usuários</td><td class="c yes">✔</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Definir perfis e redefinir senhas</td><td class="c yes">✔</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Backup e reset da base</td><td class="c yes">✔</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Admitir e cadastrar paciente</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Editar dados cadastrais e leito</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td><td class="c no">—</td></tr>
+          <tr><td>Ver dados cadastrais do paciente</td><td class="c yes">✔</td><td class="c yes">✔</td><td class="c yes">✔</td><td class="c yes">✔</td></tr>
+          <tr><td>Ver dados clínicos do prontuário</td><td class="c yes">✔</td><td class="c no">—</td><td class="c yes">✔</td><td class="c yes">✔</td></tr>
+          <tr><td>Definir diagnóstico</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td></tr>
+          <tr><td>Dar alta</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td></tr>
+          <tr><td>Registrar sinais vitais</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td></tr>
+          <tr><td>Escrever anotação de enfermagem</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td></tr>
+          <tr><td>Escrever evolução médica</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td></tr>
+          <tr><td>Lançar e suspender prescrição</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td><td class="c no">—</td></tr>
+          <tr><td>Checar medicação do turno</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✔</td></tr>
+          <tr><td>Imprimir prontuário</td><td class="c yes">✔</td><td class="c no">—</td><td class="c yes">✔</td><td class="c yes">✔</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>Repare na linha "Ver dados clínicos".</strong> A recepção cadastra o paciente, mas não vê os sinais vitais, as anotações nem as medicações dele. Isso não é uma invenção nossa: é o princípio do <em>acesso mínimo necessário</em>, que a LGPD exige de qualquer sistema de saúde. Cada pessoa acessa só o que precisa para fazer o próprio trabalho. Implementar essa única linha já ensina mais sobre privacidade de dados do que uma aula inteira de teoria.
+    </div>
+
+    <div class="callout red">
+      <strong>Esconder o botão não é segurança.</strong> Se o técnico não pode prescrever, o botão não aparece na tela dele — mas a verificação tem que se repetir no PHP que recebe o formulário. Qualquer pessoa consegue digitar o endereço da página direto no navegador. Essa é a aula mais importante do módulo de permissões.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. MÓDULOS ============ -->
+<section id="modulos">
+  <div class="wrap">
+    <h2><span class="num">5</span>Os módulos</h2>
+    <p class="lead">O módulo 0 já está feito. Os outros seis são o trabalho do bimestre — e cada um funciona sozinho, o que permite avançar em ordem sem que uma tela dependa da anterior estar perfeita.</p>
+
+    <div class="grid g2">
+      <div class="card mod">
+        <span class="badge done">Já feito</span>
+        <div class="stamp">Módulo 0</div>
+        <h4>Login e sessão</h4>
+        <p>A tela de login já existe. Falta ajustar três coisas antes de seguir adiante:</p>
+        <ul>
+          <li>Senha gravada com <code>password_hash()</code> e conferida com <code>password_verify()</code> — nunca texto puro nem MD5</li>
+          <li>Consulta com <em>prepared statement</em> em <code>mysqli</code> procedural, nunca concatenando <code>$_POST</code> dentro do SQL</li>
+          <li>Um arquivo <code>protege.php</code> no topo de toda página interna</li>
+        </ul>
+      </div>
+
+      <div class="card mod">
+        <span class="badge">Sprint 2</span>
+        <div class="stamp">Módulo 1</div>
+        <h4>Usuários <span style="font-weight:400; color:var(--purple); font-size:14px">· administrador</span></h4>
+        <p>O menor módulo do sistema e o melhor ponto de partida para aprender CRUD — sem depender de nenhum outro.</p>
+        <ul>
+          <li>Listar, cadastrar e desativar usuários</li>
+          <li>Escolher o perfil de cada um</li>
+          <li>Redefinir senha (gerando o hash na hora)</li>
+          <li>Nunca excluir: apenas <code>ativo = 0</code></li>
+        </ul>
+      </div>
+
+      <div class="card mod">
+        <span class="badge">Sprint 3–4</span>
+        <div class="stamp">Módulo 2</div>
+        <h4>Pacientes <span style="font-weight:400; color:var(--amber); font-size:14px">· recepção</span></h4>
+        <p>A admissão e a lista de leitos. É o CRUD mais completo do sistema.</p>
+        <ul>
+          <li>Admitir paciente: dados, contato, acompanhante, alergias</li>
+          <li>Listar internados com nome, leito, idade e diagnóstico</li>
+          <li>Buscar por nome e trocar de leito</li>
+          <li><strong>Alergia em destaque vermelho</strong> em toda tela do paciente</li>
+        </ul>
+      </div>
+
+      <div class="card mod">
+        <span class="badge">Sprint 5</span>
+        <div class="stamp">Módulo 3</div>
+        <h4>Sinais vitais <span style="font-weight:400; color:var(--green); font-size:14px">· técnico</span></h4>
+        <p>O registro mais frequente do dia a dia da enfermagem.</p>
+        <ul>
+          <li>PA, FC, FR, temperatura, SpO₂, glicemia e escala de dor</li>
+          <li>Histórico do paciente, do mais recente para o mais antigo</li>
+          <li><strong>Valores fora da faixa aparecem em vermelho</strong></li>
+          <li>As faixas ficam em um arquivo só, definidas com a professora de Enfermagem</li>
+        </ul>
+      </div>
+
+      <div class="card mod">
+        <span class="badge">Sprint 6</span>
+        <div class="stamp">Módulo 4</div>
+        <h4>Registros <span style="font-weight:400; color:var(--ink-3); font-size:14px">· médico e técnico</span></h4>
+        <p>Anotação de enfermagem e evolução médica, na mesma linha do tempo.</p>
+        <ul>
+          <li>Texto livre com data, hora e autor automáticos</li>
+          <li>O tipo é definido pelo perfil de quem está logado</li>
+          <li>Listagem cronológica com nome e registro profissional do autor</li>
+          <li><strong>Registro salvo não se edita nem se apaga</strong></li>
+        </ul>
+      </div>
+
+      <div class="card mod">
+        <span class="badge">Sprint 7</span>
+        <div class="stamp">Módulo 5</div>
+        <h4>Prescrição e checagem <span style="font-weight:400; color:var(--ink-3); font-size:14px">· médico e técnico</span></h4>
+        <p>O módulo mais valioso para a Enfermagem e o mais difícil para o TDS. Fica por último de propósito.</p>
+        <ul>
+          <li>Médico lança medicamento, dose, via, frequência e horários</li>
+          <li>O sistema gera os horários do dia como <em>pendentes</em></li>
+          <li>Técnico vê a lista do turno e checa</li>
+          <li><strong>Não administrado exige justificativa</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card mod">
+        <span class="badge">Sprint 8</span>
+        <div class="stamp">Módulo 6</div>
+        <h4>Ficha e impressão</h4>
+        <p>Uma tela só, reunindo tudo o que se sabe sobre o paciente.</p>
+        <ul>
+          <li>Abas: dados · sinais vitais · registros · medicações</li>
+          <li>A recepção enxerga apenas a primeira aba</li>
+          <li>Botão imprimir usando só CSS <code>@media print</code> — sem gerar PDF</li>
+        </ul>
+      </div>
+      <div class="card" style="background:var(--green-soft); border-color:#b8ded9">
+        <h4>Ordem de construção</h4>
+        <p style="margin-bottom:0">Repare que os módulos seguem a dependência natural: primeiro <strong>usuários</strong> (para existirem logins), depois <strong>pacientes</strong> (para existir de quem registrar), e só então os registros clínicos. Nenhuma aula começa dependendo de algo que ficou pela metade.</p>
+      </div>
+    </div>
+
+    <h3>O padrão de acesso ao banco</h3>
+    <p class="lead" style="margin-bottom:12px">Todo o projeto usa <code>mysqli</code> na forma <strong>procedural</strong> — nada de <code>new</code>, nada de <code>-&gt;</code>, nenhuma classe. São sempre os mesmos quatro passos, do login até a checagem de medicação.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="c">Passo</th><th>Função</th><th>Para que serve</th></tr></thead>
+        <tbody>
+          <tr><td class="c">1</td><td><code>mysqli_prepare()</code></td><td>Envia o SQL com <code>?</code> no lugar dos valores</td></tr>
+          <tr><td class="c">2</td><td><code>mysqli_stmt_bind_param()</code></td><td>Amarra os valores aos <code>?</code> — <code>s</code> texto, <code>i</code> inteiro, <code>d</code> decimal</td></tr>
+          <tr><td class="c">3</td><td><code>mysqli_stmt_execute()</code></td><td>Executa a consulta</td></tr>
+          <tr><td class="c">4</td><td><code>mysqli_stmt_get_result()</code> + <code>mysqli_fetch_assoc()</code></td><td>Lê o resultado, linha por linha</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>Por que não PDO.</strong> PDO é orientado a objetos — <code>new PDO(...)</code>, <code>$conexao-&gt;prepare()</code>, <code>$stmt-&gt;execute()</code>. Como a disciplina é programação estruturada, ele entraria em conflito com o que está sendo ensinado. O <code>mysqli</code> procedural entrega exatamente a mesma proteção contra SQL injection usando só funções, e <code>password_hash()</code> / <code>password_verify()</code> também são funções soltas. Não se perde nada em segurança. PDO fica como assunto natural quando a turma chegar em POO — e aí vale mostrar os dois lado a lado, porque o conceito é idêntico.
+    </div>
+
+    <h3>O que fica de fora da versão 1</h3>
+    <p class="lead" style="margin-bottom:12px">Anote e resista à tentação. Cada item aqui é uma versão 2.</p>
+    <div class="fora">
+      <span>Agendamento de consultas</span>
+      <span>Faturamento e convênio</span>
+      <span>Upload de exames</span>
+      <span>Bulário de medicamentos</span>
+      <span>Gráficos de evolução</span>
+      <span>Balanço hídrico</span>
+      <span>Escalas de Braden e Morse</span>
+      <span>Assinatura digital</span>
+      <span>Aplicativo mobile</span>
+      <span>Recuperar senha por e-mail</span>
+      <span>Integração com outros sistemas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. TELAS ============ -->
+<section id="telas">
+  <div class="wrap">
+    <h2><span class="num">6</span>As telas</h2>
+    <p class="lead">Onze telas no total. Abaixo, um rascunho de como duas delas devem ficar — não é o desenho final, é o alvo.</p>
+
+    <div class="grid g2">
+      <div>
+        <h3 style="margin-top:0">Painel de leitos</h3>
+        <div class="mock">
+          <div class="bar"><span>🏥 Prontuário TDS</span><span class="u">Téc. Carlos Menezes · Sair</span></div>
+          <div class="body">
+            <div class="linha" style="font-weight:700; color:var(--ink-3); font-size:12.5px; text-transform:uppercase; letter-spacing:.05em">
+              <span>Leito · Paciente</span><span>Situação</span>
+            </div>
+            <div class="linha"><span><strong>101-A</strong> · Maria Aparecida Fontes, 74a<br><span style="color:var(--ink-3); font-size:12.5px">Pneumonia comunitária</span></span><span class="alto">2 medicações pendentes</span></div>
+            <div class="linha"><span><strong>102-B</strong> · João Batista Corrêa, 47a<br><span style="color:var(--ink-3); font-size:12.5px">Diabetes descompensada</span></span><span class="alto">1 medicação pendente</span></div>
+            <div class="linha"><span><strong>103-A</strong> · Helena Sartori, 31a<br><span style="color:var(--ink-3); font-size:12.5px">Pós-operatório de apendicectomia</span></span><span style="color:var(--ink-3)">em dia</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin-top:0">Ficha do paciente</h3>
+        <div class="mock">
+          <div class="bar"><span>← Maria Aparecida Fontes · 101-A</span><span class="u">🖨 Imprimir</span></div>
+          <div class="body">
+            <div class="alerta">⚠ ALERGIA: Dipirona</div>
+            <div class="tabs">
+              <span class="on">Sinais vitais</span><span>Dados</span><span>Registros</span><span>Medicações</span>
+            </div>
+            <div class="linha"><span>ontem · 06:00 &nbsp; PA 134×84 &nbsp; FC 96</span><span class="alto">T 38,6 °C · SpO₂ 92%</span></div>
+            <div class="linha"><span>ontem · 18:00 &nbsp; PA 128×78 &nbsp; FC 88</span><span>T 37,4 °C · SpO₂ 95%</span></div>
+            <div class="linha" style="color:var(--ink-3); font-style:italic">Aguardando registro do turno de hoje…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>A mesma ficha muda conforme quem abre.</strong> A recepção vê só a aba "Dados". O técnico vê tudo e tem os botões de registrar. O médico vê tudo e tem os botões de prescrever. O administrador vê tudo e não tem botão nenhum. Uma tela, quatro comportamentos — é aqui que a matriz de permissões vira código.
+    </div>
+
+    <h3>Lista completa</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Tela</th><th>Arquivo sugerido</th><th>Quem acessa</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Login</td><td><code>index.php</code></td><td>todos</td></tr>
+          <tr><td>2</td><td>Painel de leitos</td><td><code>painel.php</code></td><td>todos</td></tr>
+          <tr><td>3</td><td>Usuários</td><td><code>usuarios/listar.php</code></td><td>administrador</td></tr>
+          <tr><td>4</td><td>Cadastro de usuário</td><td><code>usuarios/form.php</code></td><td>administrador</td></tr>
+          <tr><td>5</td><td>Admissão de paciente</td><td><code>pacientes/form.php</code></td><td>recepção</td></tr>
+          <tr><td>6</td><td>Ficha do paciente</td><td><code>pacientes/ver.php</code></td><td>todos</td></tr>
+          <tr><td>7</td><td>Novo sinal vital</td><td><code>sinais/form.php</code></td><td>técnico</td></tr>
+          <tr><td>8</td><td>Novo registro</td><td><code>registros/form.php</code></td><td>médico, técnico</td></tr>
+          <tr><td>9</td><td>Nova prescrição</td><td><code>prescricoes/form.php</code></td><td>médico</td></tr>
+          <tr><td>10</td><td>Medicações do turno</td><td><code>prescricoes/checagem.php</code></td><td>técnico</td></tr>
+          <tr><td>11</td><td>Impressão do prontuário</td><td><code>pacientes/imprimir.php</code></td><td>admin, médico, técnico</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. BANCO ============ -->
+<section id="dados">
+  <div class="wrap">
+    <h2><span class="num">7</span>O banco de dados</h2>
+    <p class="lead">Seis tabelas. O script <code>banco_prontuario_tds.sql</code> cria tudo e já vem com três pacientes fictícios e um plantão inteiro preenchido. As datas são relativas ao dia em que o script roda: o plantão de <strong>ontem</strong> vem pronto, o de <strong>hoje</strong> fica em branco para os alunos registrarem.</p>
+
+    <div class="grid g3">
+      <div class="db">
+        <div class="tname">usuarios</div>
+        <ul>
+          <li class="pk">id</li><li>nome</li><li>login</li><li>senha (hash)</li>
+          <li>registro_profissional</li><li>perfil</li><li>ativo</li>
+        </ul>
+      </div>
+      <div class="db">
+        <div class="tname">pacientes</div>
+        <ul>
+          <li class="pk">id</li><li>nome</li><li>data_nascimento</li><li>responsavel</li>
+          <li>alergias</li><li>leito</li><li>diagnostico</li><li>situacao</li>
+          <li>data_admissao</li><li class="fk">cadastrado_por →</li>
+          <li>data_alta</li><li class="fk">alta_usuario_id →</li>
+        </ul>
+      </div>
+      <div class="db">
+        <div class="tname">sinais_vitais</div>
+        <ul>
+          <li class="pk">id</li><li class="fk">paciente_id →</li><li class="fk">usuario_id →</li>
+          <li>data_hora</li><li>pa_sistolica / pa_diastolica</li><li>fc · fr · temperatura</li>
+          <li>saturacao · glicemia · dor</li>
+        </ul>
+      </div>
+      <div class="db">
+        <div class="tname">registros</div>
+        <ul>
+          <li class="pk">id</li><li class="fk">paciente_id →</li><li class="fk">usuario_id →</li>
+          <li>tipo (anotacao / evolucao)</li><li>data_hora</li><li>texto</li>
+        </ul>
+      </div>
+      <div class="db">
+        <div class="tname">prescricoes</div>
+        <ul>
+          <li class="pk">id</li><li class="fk">paciente_id →</li><li class="fk">usuario_id →</li>
+          <li>medicamento · dose · via</li><li>frequencia · horarios</li>
+          <li>data_inicio / data_fim</li><li>ativo</li>
+        </ul>
+      </div>
+      <div class="db">
+        <div class="tname">administracoes</div>
+        <ul>
+          <li class="pk">id</li><li class="fk">prescricao_id →</li><li class="fk">usuario_id →</li>
+          <li>horario_previsto</li><li>data_hora_checagem</li>
+          <li>status</li><li>justificativa</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Uma simplificação consciente.</strong> Num hospital de verdade existiria uma tabela <code>internacoes</code>, e cada internação teria seus próprios registros — assim o paciente que volta seis meses depois começa um prontuário novo. Aqui, os registros ligam direto no paciente. Isso deixa toda consulta mais simples, o que importa muito para uma turma de 1º módulo. Fica anotado como a primeira melhoria da versão 2 — e como uma boa pergunta de prova.
+    </div>
+
+    <div class="callout">
+      <strong>Dois scripts, não um.</strong> O <code>banco_prontuario_tds.sql</code> apaga e recria o banco inteiro — roda uma vez só, no sprint 1. Depois disso ele nunca mais deve ser executado, senão leva junto todo o trabalho da turma. Para limpar os dados entre uma turma de Enfermagem e outra existe o <code>reset_turma.sql</code>: ele apaga só os dados clínicos, recarrega os três pacientes de exemplo e <strong>mantém os usuários</strong>. É essa a função "resetar a base" do perfil administrador.
+    </div>
+
+    <h3>Usuários que já vêm no banco</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Login</th><th>Nome</th><th>Perfil</th><th>Senha</th></tr></thead>
+        <tbody>
+          <tr><td><code>admin</code></td><td>Silas Santos (TI)</td><td>administrador</td><td><code>123456</code></td></tr>
+          <tr><td><code>fernanda</code></td><td>Fernanda Kunz</td><td>recepção</td><td><code>123456</code></td></tr>
+          <tr><td><code>ricardo</code></td><td>Dr. Ricardo Halmenschlager</td><td>médico</td><td><code>123456</code></td></tr>
+          <tr><td><code>carlos</code></td><td>Téc. Carlos Menezes</td><td>técnico</td><td><code>123456</code></td></tr>
+          <tr><td><code>juliana</code></td><td>Téc. Juliana Prado</td><td>técnico</td><td><code>123456</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. UM DIA ============ -->
+<section id="dia">
+  <div class="wrap">
+    <h2><span class="num">8</span>Um dia no sistema</h2>
+    <p class="lead">Maria Aparecida, 74 anos, leito 101-A, internada com pneumonia — e alérgica a dipirona. Veja como os perfis se revezam no prontuário dela.</p>
+
+    <div class="tl">
+      <div class="item rec">
+        <div class="hora">Dia 1 · 08:30</div>
+        <div class="titulo">Recepção admite a paciente</div>
+        <div class="desc">Confere o documento, cadastra nome, data de nascimento, cartão SUS e telefone. Anota a filha como acompanhante e — o campo mais importante — a alergia a dipirona que a família informou. Aloca no leito 101-A.</div>
+      </div>
+      <div class="item med">
+        <div class="hora">Dia 1 · 10:00</div>
+        <div class="titulo">Médico avalia e prescreve</div>
+        <div class="desc">Registra o diagnóstico de pneumonia comunitária. Prescreve amoxicilina + clavulanato 500 mg, VO, 8/8h nos horários 06:00, 14:00 e 22:00. Prescreve também paracetamol 750 mg <em>se necessário</em> para febre acima de 37,8 °C.</div>
+      </div>
+      <div class="item">
+        <div class="hora">Dia 2 · 06:00</div>
+        <div class="titulo">Técnico afere os sinais vitais</div>
+        <div class="desc">PA 134×84, FC 96, FR 24, T 38,6 °C, SpO₂ 92%, dor 3. O sistema destaca a temperatura e a saturação em vermelho — estão fora da faixa.</div>
+      </div>
+      <div class="item">
+        <div class="hora">Dia 2 · 06:05</div>
+        <div class="titulo">Técnico checa a medicação das 06h</div>
+        <div class="desc">Marca a amoxicilina como administrada. O sistema grava sozinho quem checou e a hora real da checagem.</div>
+      </div>
+      <div class="item">
+        <div class="hora">Dia 2 · 06:15</div>
+        <div class="titulo">Técnico escreve a anotação de enfermagem</div>
+        <div class="desc">"Paciente acordada, orientada, em ar ambiente. Refere tosse produtiva. Aceitou dieta parcialmente. Sinais vitais aferidos e registrados."</div>
+      </div>
+      <div class="item med">
+        <div class="hora">Dia 2 · 09:00</div>
+        <div class="titulo">Médico lê tudo e escreve a evolução</div>
+        <div class="desc">Vê a febre e a saturação registradas pelo técnico. Mantém a antibioticoterapia e pede reavaliação da febre à tarde. A conduta nasce do que a enfermagem registrou.</div>
+      </div>
+      <div class="item">
+        <div class="hora">Dia 2 · 22:40</div>
+        <div class="titulo">Técnico não consegue administrar</div>
+        <div class="desc">A paciente recusa a medicação. Ele marca <em>não administrado</em> e o sistema <strong>exige a justificativa</strong> antes de salvar. Fica registrado quem tentou, a que horas e por quê.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Nada disso se apaga.</strong> Se o técnico digitou um valor errado às 06:00, ele não corrige o registro antigo — ele faz um registro novo explicando. É assim no prontuário de papel, é assim no eletrônico, e vai ser assim no nosso.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. REGRAS ============ -->
+<section id="regras">
+  <div class="wrap">
+    <h2><span class="num">9</span>Sete regras de ouro</h2>
+    <p class="lead">São poucas, e cada uma rende uma aula inteira. Valem para todas as telas, em todas as aulas.</p>
+
+    <div class="card">
+      <div class="regra"><div class="n">1</div><div><div class="t">Nada se apaga</div><div class="d">O botão "Excluir" vira "Inativar". Prontuário é documento legal. No banco, isso é <code>UPDATE ... SET ativo = 0</code>.</div></div></div>
+      <div class="regra"><div class="n">2</div><div><div class="t">Todo registro grava autor e hora</div><div class="d">Vindos da sessão e do relógio do servidor — nunca digitados pelo usuário.</div></div></div>
+      <div class="regra"><div class="n">3</div><div><div class="t">Registro salvo não se edita</div><div class="d">Errou? Faz um registro novo corrigindo. Não existe botão de editar em anotação nem em evolução.</div></div></div>
+      <div class="regra"><div class="n">4</div><div><div class="t">Alergia sempre em destaque</div><div class="d">Vermelho, no topo, em toda tela do paciente. Detalhe pequeno no código, impacto clínico enorme.</div></div></div>
+      <div class="regra"><div class="n">5</div><div><div class="t">"Não administrado" exige justificativa</div><div class="d">Campo obrigatório, validado no PHP — não só no HTML.</div></div></div>
+      <div class="regra"><div class="n">6</div><div><div class="t">Permissão se verifica duas vezes</div><div class="d">Uma para esconder o botão, outra no PHP que recebe o formulário.</div></div></div>
+      <div class="regra"><div class="n">7</div><div><div class="t">Data futura não entra</div><div class="d">Nem em sinal vital, nem em registro, nem em checagem.</div></div></div>
+    </div>
+
+    <div class="callout red">
+      <strong>Somente dados fictícios.</strong> Essa frase precisa estar escrita na tela de login: <em>"Sistema didático — dados fictícios. Proibido cadastrar dados de pacientes reais."</em> Nenhum nome, CPF ou dado de pessoa real entra neste banco, em nenhuma circunstância.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. SPRINTS ============ -->
+<section id="sprints">
+  <div class="wrap">
+    <h2><span class="num">10</span>Cronograma — 8 sprints</h2>
+    <p class="lead">Cada sprint dura de duas a três aulas. A regra é simples: <strong>ao final de cada sprint, o sistema tem que rodar.</strong> Nunca terminamos uma aula com o projeto quebrado.</p>
+
+    <div class="card">
+      <div class="sprint"><div class="tag"><small>Sprint</small>1</div><div><div class="ent">Banco criado, conexão única e login refeito</div><div class="cnc"><code>mysqli</code> procedural · sessão · <code>password_hash()</code> · prepared statement</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>2</div><div><div class="ent">Layout padrão e CRUD de usuários</div><div class="cnc"><code>include</code> · laço de repetição · INSERT · Bootstrap</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>3</div><div><div class="ent">Admissão de paciente e painel de leitos</div><div class="cnc">formulários · validação · listagem do banco</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>4</div><div><div class="ent">Ficha do paciente, troca de leito, alta e inativação</div><div class="cnc">SELECT por id · parâmetro na URL · soft delete</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>5</div><div><div class="ent">Sinais vitais com histórico e destaque de alterados</div><div class="cnc">chave estrangeira · condicional na exibição</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>6</div><div><div class="ent">Registros: anotação e evolução</div><div class="cnc">permissão por perfil · ENUM · campo TEXT</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>7</div><div><div class="ent">Prescrição e tela de checagem do turno</div><div class="cnc">JOIN entre três tabelas · lógica de horários</div></div></div>
+      <div class="sprint"><div class="tag"><small>Sprint</small>8</div><div><div class="ent">Impressão, ajustes e teste com a turma de Enfermagem</div><div class="cnc">CSS <code>@media print</code> · teste com usuário real</div></div></div>
+    </div>
+
+    <div class="callout">
+      <strong>Se o tempo apertar no sprint 7:</strong> a versão mínima do módulo de medicação é o médico digitar os horários manualmente, sem geração automática. O técnico ainda consegue checar, que é a parte que importa para a Enfermagem.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. GRUPOS ============ -->
+<section id="grupos">
+  <div class="wrap">
+    <h2><span class="num">11</span>Como vamos trabalhar</h2>
+    <p class="lead">Sem divisão em grupos. A turma inteira constrói a mesma tela, na mesma aula, e existe uma única versão oficial do sistema — mantida pelo professor. Assim o problema de "juntar tudo no final" simplesmente não existe.</p>
+
+    <div class="flow">
+      <div class="step">
+        <div class="who w-tec">Antes da aula</div>
+        <div class="what">Todos baixam a versão oficial</div>
+        <div class="det">Um .zip só, igual para todo mundo</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Durante</div>
+        <div class="what">Cada um programa a sua cópia</div>
+        <div class="det">A tela do dia, na própria máquina</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Últimos 15 min</div>
+        <div class="what">Consolidação projetada</div>
+        <div class="det">Uma solução da turma vira a oficial</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="who w-tec">Aula seguinte</div>
+        <div class="what">Todos partem do mesmo ponto</div>
+        <div class="det">Quem faltou não fica para trás</div>
+      </div>
+    </div>
+
+    <div class="grid g2x" style="margin-top:8px">
+      <div class="card">
+        <h4>A versão oficial</h4>
+        <p style="margin-bottom:0">Uma única pasta <code>prontuario/</code> no servidor do laboratório. É a verdade do projeto e só o professor grava nela. É essa versão que fica na escola no final.</p>
+      </div>
+      <div class="card">
+        <h4>A cópia de cada aluno</h4>
+        <p style="margin-bottom:0">Cada um com XAMPP na própria máquina, com o próprio banco. É onde ele erra à vontade, quebra, apaga e recomeça sem atrapalhar ninguém.</p>
+      </div>
+      <div class="card">
+        <h4>A consolidação</h4>
+        <p style="margin-bottom:0">Nos últimos 15 minutos, a turma decide junto qual solução vai para a versão oficial. O professor projeta e cola o código na frente de todos, explicando a escolha.</p>
+      </div>
+      <div class="card">
+        <h4>O aluno da vez</h4>
+        <p style="margin-bottom:0">A cada aula, um aluno diferente programa projetado enquanto os colegas acompanham e ajudam. Com 8 sprints e uma turma pequena, todos passam pela cadeira.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Por que isso funciona melhor que dividir em grupos.</strong> Todo aluno escreve todas as telas, em vez de virar especialista em um pedaço só e nunca ter feito um <code>JOIN</code>. Ninguém fica travado esperando outro grupo terminar. Quem faltou pega o .zip e continua. E, principalmente: não existe aquela noite antes da entrega tentando encaixar cinco pastas que nunca conversaram.
+    </div>
+
+    <div class="card" style="background:var(--green-soft); border-color:#b8ded9">
+      <h4>Regra que vale para todos</h4>
+      <p style="margin-bottom:0"><code>conexao.php</code>, <code>cabecalho.php</code> e <code>permissao.php</code> são escritos uma vez, juntos, e ninguém mexe depois. Toda página nova começa com <code>require</code> desses três arquivos. Isso evita o clássico "cada aluno fez sua própria conexão com o banco".</p>
+    </div>
+
+    <h3>Como avaliar sem grupos</h3>
+    <div class="card">
+      <div class="regra"><div class="n">1</div><div><div class="t">A cópia de cada aluno é a entrega</div><div class="d">Ao final de cada sprint, cada um manda o .zip da própria pasta. Você abre e testa se a tela do dia funciona na máquina dele — não na oficial.</div></div></div>
+      <div class="regra"><div class="n">2</div><div><div class="t">Desafio individual por sprint</div><div class="d">Um acréscimo pequeno que cada um resolve sozinho: um filtro na listagem, uma validação a mais, uma mensagem de erro melhor. É aqui que se vê quem entendeu.</div></div></div>
+      <div class="regra"><div class="n">3</div><div><div class="t">A vez na cadeira conta nota</div><div class="d">Quando é a vez do aluno programar projetado, ele explica em voz alta o que está fazendo. Explicar é a prova real de que entendeu.</div></div></div>
+    </div>
+
+    <h3>Como o projeto será avaliado</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Critério</th><th class="c">Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Funciona sem erro no fluxo principal</td><td class="c">30%</td></tr>
+          <tr><td>Usa prepared statements e senha com hash</td><td class="c">20%</td></tr>
+          <tr><td>Respeita a matriz de permissões nas duas verificações</td><td class="c">15%</td></tr>
+          <tr><td>Aplica as regras de ouro (autor, hora, não apaga)</td><td class="c">15%</td></tr>
+          <tr><td>Validação de formulário e mensagens ao usuário</td><td class="c">10%</td></tr>
+          <tr><td>Participação nas aulas e entrega no prazo</td><td class="c">10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Próximos passos</h3>
+    <div class="card">
+      <div class="regra"><div class="n">1</div><div><div class="t">Fechar os campos de sinais vitais com a professora de Enfermagem</div><div class="d">Quais campos e quais faixas de referência. É a decisão que mais custa mudar depois — fazer <em>antes</em> de escrever a tabela.</div></div></div>
+      <div class="regra"><div class="n">2</div><div><div class="t">Rodar o script do banco no servidor do laboratório</div><div class="d">E confirmar com a TI da escola que as máquinas enxergam o servidor.</div></div></div>
+      <div class="regra"><div class="n">3</div><div><div class="t">Refazer o login com <code>mysqli</code> preparado e hash de senha</div><div class="d">Sprint 1. Tudo procedural, sem uma única classe. Melhor ensinar certo agora do que corrigir depois.</div></div></div>
+      <div class="regra"><div class="n">4</div><div><div class="t">Montar a versão oficial e colar o cronograma na parede</div><div class="d">Criar a pasta do projeto no servidor e distribuir o primeiro .zip para a turma.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0 0 6px"><strong>Prontuário Eletrônico TDS</strong> — Curso Técnico em Desenvolvimento de Sistemas · Turma 2025</p>
+    <p style="margin:0">Documento de escopo · agosto de 2026 · Todos os dados citados são fictícios.</p>
+  </div>
+</footer>
+
+</body>
+</html>
