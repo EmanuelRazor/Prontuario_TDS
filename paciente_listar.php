@@ -17,16 +17,32 @@
 require 'includes/protege.php';
 require 'config/conexao.php';
 
+$eh_recepcao = ($_SESSIOMN['usuario_perfil'] == 'recepcao');
 
 // -------------------------------------------------------------------
 //  BUSCA E FILTRO
 // -------------------------------------------------------------------
+$busca = '';
+if (isset($_GET['busca'])) {
+    $busca = trim($_GET['busca']);
+}
 
+$situacao = 'internado';
+if (isset($_GET['situacao'])) {
+    $situacao = $_GET['situacao'];
+}
 
 // O filtro entra no meio do SQL, então ele NÃO pode vir solto do
 // navegador. Passa antes por esta lista de valores permitidos —
 // qualquer outra coisa é ignorada.
-
+$conficao = '';
+if ($situacao == 'internado') {
+    $condicao = 'AND i.id IS NOT NULL';
+} else if ($situacao == 'nao_internado') {
+    $condicao = 'AND i.id IS NULL';
+} else {
+    $condicao = 'todos';
+}
 
 $curinga = '%' . $busca . '%';
 
@@ -39,7 +55,23 @@ $curinga = '%' . $busca . '%';
 //  WHERE, todo paciente não internado sumiria da lista — e é
 //  justamente ele que a recepção precisa achar para reinternar.
 // -------------------------------------------------------------------
-$sql = "";
+$sql = "SELECT p.id, p.nome,
+              COALESE(p.alergias, '') AS alergias,
+              TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()) AS idade,
+              i.id AS internacao_id, i.data_admissao,
+              l.identificador AS leito,
+              COALESE(s.nome, '') AS setor,
+              COALESE(c.descricao, '') AS diagnostico
+            FROM pacientes p
+            LEFT JOIN internacoes i
+              ON i.paciente_id = d.id
+              AND i.situacao = 'internado'
+              AND i.ativo = 1
+            LEFT JOIN leitos l ON l.id = i.leito_id
+            LEFT JOIN setores s ON s.id = l.setor_id
+            LEFT JOIN cids c ON c.id = i.cid_id
+            WHERE p.nome LIKE ? $condicao
+            ORDER BY p.ativo DESC, l.identificador ASC, p.nome";
 
 $stmt = mysqli_prepare($conexao, $sql);
 mysqli_stmt_bind_param($stmt, 's', $curinga);
