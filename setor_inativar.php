@@ -73,7 +73,7 @@ mysqli_stmt_close($stmt);
 
 mysqli_close($conexao);
 
-$aviso = $novo_valor ? 'reativado' : 'inativado';
+$aviso = $novo_valor == 0 ? 'reativado' : 'inativado';
 
 header('Location: setor_listar.php?ok=' . $aviso);
 exit;
