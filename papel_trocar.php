@@ -54,8 +54,8 @@ require_once 'config/papel.php';
 //  agora É o verdadeiro. Depois desta linha a chave existe, e a partir
 //  do próximo login o autenticar.php cuida dela.
 // -------------------------------------------------------------------
-if(isset($_SESSION['usuario_perfil_real'])){
-    $_SESSION['usuario_perfil_real'] = $_SESSION['usuario_perfil_real'];
+if(!isset($_SESSION['usuario_perfil_real'])){
+    $_SESSION['usuario_perfil_real'] = $_SESSION['usuario_perfil'];
 }
 
 
@@ -75,9 +75,8 @@ if(isset($_SESSION['usuario_perfil_real'])){
 
 $perfil_real = $_SESSION['usuario_perfil_real'];
 
-if(!ADMIN_TROCA_PAPEL || $perfil_real != 'administrador') {
+if(!ADMIN_TROCA_PAPEL || $perfil_real != 'administrador'){
     header('Location: painel.php?negado=1');
-    exit;
 }
 
 // -------------------------------------------------------------------

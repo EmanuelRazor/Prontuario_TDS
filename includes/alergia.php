@@ -66,23 +66,25 @@
 //  encher de variação inventada — quanto mais longa a lista, maior a
 //  chance de aceitar por engano uma frase que descreve uma alergia.
 // -------------------------------------------------------------------
-FUNCTION formasDeNegarAlergia() {
-    return array (
-        ' ',
+function formasDeNegarAlergia()
+{
+    return array(
+        '',
         'nega alergias',
         'nega alergia',
         'nega',
         'nenhuma',
         'nenhum',
+        'nada',
         'não tem',
         'nao tem',
         'não',
-        '_',
+        '-',
         'nao',
         'sem alergias',
         'sem alergia',
         'n/a',
-        '__',
+        '--'
     );
 }
 
@@ -104,9 +106,7 @@ FUNCTION formasDeNegarAlergia() {
 //  A ordem importa: minúsculo DEPOIS do trim não muda nada, mas
 //  comparar sem os dois muda tudo.
 // -------------------------------------------------------------------
-
-
-function negaAlergias($texto) {
+function negaAlergias($texto){
 
 $limpo = trim(strtolower($texto));
 return in_array($limpo, formasDeNegarAlergia());

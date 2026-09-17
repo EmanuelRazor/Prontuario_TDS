@@ -21,10 +21,57 @@ require 'config/conexao.php';
 require 'includes/alergia.php';
 
 
+function voltarComErro($erro, $id, $dados)
+{
+    $url = 'paciente_form.php?erro=' . $erro;
+
+    if ($id > 0) {
+        $url = $url . '&id=' . $id;
+    }
+
+    foreach ($dados as $campo => $valor) {
+        $url = $url . '&' . $campo . '=' . urlencode($valor);
+    }
+
+    header('Location: ' . $url);
+    exit;
+}
+
+
+if (!isset($_POST['nome'])) {
+    header('Location: paciente_listar.php');
+    exit;
+}
+
+$id          = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+$nome        = trim($_POST['nome']);
+$nascimento  = trim($_POST['nascimento']);
+$sexo        = $_POST['sexo'];
+$cartao      = trim($_POST['cartao']);
+$telefone    = trim($_POST['telefone']);
+$endereco    = trim($_POST['endereco']);
+$responsavel = trim($_POST['responsavel']);
 
 // A alergia vem em DUAS partes: a resposta e, quando for o caso, o
 // texto. A coluna do banco continua sendo uma só — ela é montada mais
 // abaixo, depois de as duas partes serem conferidas.
+$tem_alergia    = isset($_POST['tem_alergia']) ? $_POST['tem_alergia'] : '';
+$alergias_texto = isset($_POST['alergias_texto']) ? trim($_POST['alergias_texto']) : '';
+
+$editando = ($id > 0);
+
+$digitado = array(
+    'nome'        => $nome,
+    'nascimento'  => $nascimento,
+    'sexo'        => $sexo,
+    'cartao'      => $cartao,
+    'telefone'    => $telefone,
+    'endereco'    => $endereco,
+    'responsavel'    => $responsavel,
+    'tem_alergia'    => $tem_alergia,
+    'alergias_texto' => $alergias_texto
+);
+
 
 // ===================================================================
 //  VALIDAÇÃO
@@ -32,6 +79,9 @@ require 'includes/alergia.php';
 //  sistema: o formulário pode chegar sem passar por ela.
 // ===================================================================
 
+if ($nome == '' || $nascimento == '' || $sexo == '') {
+    voltarComErro('campos', $id, $digitado);
+}
 
 // -------------------------------------------------------------------
 //  A ALERGIA — três recusas, e só então o texto é montado
@@ -48,33 +98,76 @@ require 'includes/alergia.php';
 // 1. Nenhuma das duas respostas. É a recusa mais importante: campo em
 //    branco não distingue "não tem" de "ninguém perguntou", e essa
 //    diferença é clínica.
-
+if ($tem_alergia != 'nega' && $tem_alergia != 'tem') {
+    voltarComErro('alergia_sem_resposta', $id, $digitado);
+}
 
 // 2. Disse que tem, e não disse qual.
-
+if ($tem_alergia == 'tem' && $alergias_texto == '') {
+    voltarComErro('alergia_sem_texto', $id, $digitado);
+}
 
 // 3. Disse que tem, e escreveu uma negação. A mesma função que decide
 //    o alerta nas telas serve para pegar a contradição aqui — se ela
 //    reconhece o texto como negação, as duas respostas não combinam.
-
+if ($tem_alergia == 'tem' && negaAlergias($alergias_texto)) {
+    voltarComErro('alergia_contraditoria', $id, $digitado);
+}
 
 // Agora sim: uma coluna, montada a partir de uma resposta sem ambiguidade.
+if ($tem_alergia == 'nega') {
+    $alergias = 'Nega alergias';
+} else {
+    $alergias = $alergias_texto;
+}
 
-
+if ($sexo != 'F' && $sexo != 'M' && $sexo != 'O') {
+    voltarComErro('sexo_invalido', $id, $digitado);
+}
 
 // A data precisa ser uma data de verdade. checkdate() recusa
 // 31 de fevereiro, por exemplo.
+$partes = explode('-', $nascimento);   // formato aaaa-mm-dd
 
+if (count($partes) != 3) {
+    voltarComErro('data_invalida', $id, $digitado);
+}
 
+$ano = (int) $partes[0];
+$mes = (int) $partes[1];
+$dia = (int) $partes[2];
 
+if (!checkdate($mes, $dia, $ano) || $ano < 1900) {
+    voltarComErro('data_invalida', $id, $digitado);
+}
 
 // REGRA DE OURO Nº 7 — data futura não entra.
+if ($nascimento > date('Y-m-d')) {
+    voltarComErro('data_futura', $id, $digitado);
+}
 
 
 // ===================================================================
 //  GRAVAÇÃO
 // ===================================================================
 
+if ($editando) {
+
+    $sql = "UPDATE pacientes
+            SET nome = ?, data_nascimento = ?, sexo = ?, cartao_sus = ?,
+                telefone = ?, endereco = ?, responsavel = ?, alergias = ?
+            WHERE id = ?";
+
+    $stmt = mysqli_prepare($conexao, $sql);
+    mysqli_stmt_bind_param($stmt, 'ssssssssi',
+        $nome, $nascimento, $sexo, $cartao, $telefone,
+        $endereco, $responsavel, $alergias, $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    $aviso = 'atualizado';
+
+} else {
 
     // ------------------------------------------------------------
     //  CADASTRO NOVO
@@ -87,7 +180,12 @@ require 'includes/alergia.php';
     //  sistema, mas não está em leito nenhum — e é assim que deve
     //  ser: cadastrar não é internar.
     // ------------------------------------------------------------
-    
+    $quem_cadastrou = $_SESSION['usuario_id'];
+
+    $sql = "INSERT INTO pacientes
+              (nome, data_nascimento, sexo, cartao_sus, telefone,
+               endereco, responsavel, alergias, cadastrado_por, ativo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 
     $stmt = mysqli_prepare($conexao, $sql);
     mysqli_stmt_bind_param($stmt, 'ssssssssi',
